@@ -1,24 +1,17 @@
 const express = require('express');
 const taskController = require('../controllers/taskController');
-const { validateObjectId, validateTaskBody } = require('../middlewares/validate');
 
 const router = express.Router();
 
-
-router
-  .route('/')
-  .get(taskController.listTasks)
-  .post(validateTaskBody, taskController.createTask);
-
+// the /search route has to come before /:id, otherwise "search" would
+// be treated as a task id
 router.get('/search', taskController.searchTasks);
 
-// routes for /:id, GET a task, PUT full update, PATCH partial update, DELETE
-router
-  .route('/:id')
-  .all(validateObjectId)
-  .get(taskController.getTaskById)
-  .put(validateTaskBody, taskController.updateTaskFull)
-  .patch(validateTaskBody, taskController.updateTaskPartial)
-  .delete(taskController.deleteTask);
+router.get('/', taskController.listTasks);
+router.post('/', taskController.createTask);
+router.get('/:id', taskController.getTaskById);
+router.put('/:id', taskController.updateTaskFull);
+router.patch('/:id', taskController.updateTaskPartial);
+router.delete('/:id', taskController.deleteTask);
 
 module.exports = router;

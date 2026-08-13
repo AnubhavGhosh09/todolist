@@ -1,24 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
-const notFound = require('./middlewares/notFound');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
-
 app.set('trust proxy', 1);
 
-// CORS: allow the React frontend to call the API.
+// allow the react frontend to call the api from its own domain
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',')
           .map((s) => s.trim())
-          // Browsers never send a trailing slash in the Origin header. so strip if present.
-      
+          // browsers never send a trailing slash in the Origin header,
+          // so we strip it from the configured origins to match
           .map((s) => s.replace(/\/+$/, ''))
-      : true, 
+      : true,
     credentials: true,
   })
 );
@@ -26,27 +24,19 @@ app.use(
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (_req, res) => {
-  res.json({
-    name: 'To-Do List API',
-    version: '1.0.0',
-    endpoints: {
-      'GET /api/v1/tasks': 'List tasks (filters: status, priority, q, sort, page, limit)',
-      'POST /api/v1/tasks': 'Create a task',
-      'GET /api/v1/tasks/search?q=': 'Search tasks by title/description',
-      'GET /api/v1/tasks/:id': 'Get a single task',
-      'PUT /api/v1/tasks/:id': 'Full update of a task',
-      'PATCH /api/v1/tasks/:id': 'Partial update (e.g. status)',
-      'DELETE /api/v1/tasks/:id': 'Delete a task',
-      'GET /api/v1/health': 'Health check',
-    },
-  });
+// simple info at the root so we can see the api is up
+app.get('/', (req, res) => {
+  res.json({ name: 'To-Do List API', version: '1.0.0' });
 });
 
 app.use('/api/v1', routes);
 
-// 404 + centralized error handling.
-app.use(notFound);
+// 404 for anything that doesnt match a route
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
+});
+
+// this has to be last, it handles all the errors from the routes above
 app.use(errorHandler);
 
 module.exports = app;

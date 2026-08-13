@@ -120,3 +120,7 @@ A plain delete button can lead to accidental deletes. We added a two-step confir
 We used Node.js, Express, Mongoose and MongoDB for the backend, React, Vite and Axios for the frontend, the Node test runner and mongodb-memory-server for testing, and Render and Netlify for hosting.
 
 Overall this was a pretty good project. It combined backend, frontend, database and deployment stuff in one app. It took a while to debug everything, but in the end it worked and we got a decent full-stack project done.
+
+## Note about AI help
+
+Some parts of this project were built with the help of AI tools, especially the backend error handling, the validation logic and the tests. After getting that help I went through the code, simplified the parts I did not fully understand, and added comments, so I can explain how everything works. I am ready to walk through any file in the review meeting. See backend/ARCHITECTURE.md for a plain explanation of how the backend is put together.

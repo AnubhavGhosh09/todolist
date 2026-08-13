@@ -3,8 +3,9 @@ const taskRoutes = require('./taskRoutes');
 
 const router = express.Router();
 
-router.get('/health', (_req, res) => {
-  res.status(200).json({ success: true, status: 'ok' });
+// health check so we can easily see if the api is up
+router.get('/health', (req, res) => {
+  res.json({ success: true, status: 'ok' });
 });
 
 router.use('/tasks', taskRoutes);

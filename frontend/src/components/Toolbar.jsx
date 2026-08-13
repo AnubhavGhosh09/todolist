@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { STATUSES, PRIORITIES } from '../constants';
 
 export default function Toolbar({ query, filters, sort, onQueryChange, onFilterChange, onSortChange }) {
-  // Local input state so typing feels instant; the parent debounces the API call.
+  // local state so typing is fast, the parent handles the debouncing
   const [input, setInput] = useState(query);
 
   useEffect(() => setInput(query), [query]);

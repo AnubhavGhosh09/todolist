@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-//Task schema having alll necessary fields for accepting input
+// schema for a task. the validators here make sure bad data never
+// gets saved, even if someone skips the validation in the controller
 const taskSchema = new mongoose.Schema(
   {
     title: {
@@ -44,20 +45,10 @@ const taskSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    toJSON: {
-      virtuals: true,
-      transform(_doc, ret) {
-        // Expose a clean `id` (as planned in the API spec) instead of `_id`.
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-        return ret;
-      },
-    },
   }
 );
 
-
+// text index so the search endpoint can look inside title and description
 taskSchema.index({ title: 'text', description: 'text' });
 
 module.exports = mongoose.model('Task', taskSchema);

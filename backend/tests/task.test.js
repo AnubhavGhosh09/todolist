@@ -41,7 +41,7 @@ after(async () => {
 
 beforeEach(async () => {
   await mongoose.connection.db.dropDatabase();
-  // dropDatabase() also drops indexes — rebuild them so $text search works.
+  // dropDatabase also removes the indexes, so we rebuild them for the search tests
   await Task.syncIndexes();
 });
 

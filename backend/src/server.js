@@ -12,7 +12,7 @@ async function start() {
       console.log(`Health check: http://localhost:${PORT}/api/v1/health`);
     });
 
-    // Graceful shutdown for Ctrl+C and deployment platforms.
+    // close the server cleanly when it stops
     for (const signal of ['SIGINT', 'SIGTERM']) {
       process.on(signal, async () => {
         console.log(`\n${signal} received, shutting down...`);

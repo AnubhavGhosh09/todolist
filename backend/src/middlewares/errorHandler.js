@@ -1,30 +1,24 @@
-const mongoose = require('mongoose');
-const ApiError = require('../utils/ApiError');
+// this middleware catches errors thrown anywhere and turns them into a
+// json response, so the client always gets something useful instead of a crash
+module.exports = function errorHandler(err, req, res, next) {
+  let statusCode = 500;
+  let message = 'Something went wrong';
+  let details;
 
-function formatMongooseErrors(error) {
-  return Object.values(error.errors || {}).map((e) => e.message);
-}
-
-//for handling any kind of error that occurs in the application and sending a proper response to the client.
-function errorHandler(err, _req, res, _next) {
-  let statusCode = err.statusCode || 500;
-  let message = err.message || 'Internal server error';
-  let details = err.details;
-
-  // for error where an id that isn't a valid ObjectId.
-  if (err instanceof mongoose.Error.CastError) {
+  // a bad id that mongoose cannot parse into an ObjectId
+  if (err.name === 'CastError') {
     statusCode = 400;
     message = 'Invalid id format';
   }
 
-  // error for missing title.
-  if (err instanceof mongoose.Error.ValidationError) {
+  // schema validation errors (missing title, bad enum, past due date...)
+  if (err.name === 'ValidationError') {
     statusCode = 400;
     message = 'Validation failed';
-    details = formatMongooseErrors(err);
+    details = Object.values(err.errors).map((e) => e.message);
   }
 
-  // Duplicate key errors.
+  // duplicate key error (code 11000), happens when a unique field repeats
   if (err.code === 11000) {
     statusCode = 409;
     message = 'A task with the same value already exists';
@@ -34,10 +28,5 @@ function errorHandler(err, _req, res, _next) {
     success: false,
     message,
     ...(details ? { details } : {}),
-    ...(process.env.NODE_ENV === 'development' && statusCode >= 500
-      ? { stack: err.stack }
-      : {}),
   });
-}
-
-module.exports = errorHandler;
+};

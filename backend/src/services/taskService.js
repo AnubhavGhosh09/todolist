@@ -1,35 +1,43 @@
 const Task = require('../models/Task');
-const ApiError = require('../utils/ApiError');
 
-const TASK_FIELDS = ['title', 'description', 'status', 'priority', 'dueDate'];
+// only take the fields we allow from the body, everything else is ignored.
+// this way the client cannot sneak in extra fields.
+function pickFields(body) {
+  const allowed = ['title', 'description', 'status', 'priority', 'dueDate'];
+  const picked = {};
+  for (const field of allowed) {
+    const value = body[field];
+    if (value !== undefined && value !== '') picked[field] = value;
+  }
+  return picked;
+}
 
+// mongo stores the id as _id but we agreed to send id to the frontend.
+// this helper works for both query results (.lean()) and saved documents.
+function toJson(doc) {
+  const obj = doc.toObject ? doc.toObject() : doc;
+  const { _id, ...rest } = obj;
+  return { ...rest, id: String(_id) };
+}
 
-const pickTaskFields = (body) =>
-  TASK_FIELDS.reduce((acc, field) => {
-    if (body[field] !== undefined) acc[field] = body[field];
-    return acc;
-  }, {});
-
-//cut undefines values
-const clean = (obj) =>
-  Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== ''));
-
-
+// all the database work lives here. the controllers only call these
+// functions and turn the result into a response.
 const taskService = {
-  //create a new task
-  async createTask(data) {
-    const task = await Task.create(pickTaskFields(data));
-    return task.toJSON();
+  // create a new task and return it
+  async createTask(body) {
+    const task = await Task.create(pickFields(body));
+    return toJson(task);
   },
 
-  //List tasks with optional filters, sorting, and pagination.
-  async listTasks({ status, priority, q, sort, page = 1, limit = 50 } = {}) {
+  // list tasks with optional filters, search, sorting and pagination
+  async listTasks(query = {}) {
+    const { status, priority, q, sort, page = 1, limit = 50 } = query;
     const filter = {};
 
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
 
-    // Full-text search across title and description 
+    // $text search works because of the text index defined on the schema
     if (q && q.trim()) {
       filter.$text = { $search: q.trim() };
     }
@@ -38,8 +46,9 @@ const taskService = {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 50));
     const skip = (pageNum - 1) * limitNum;
 
-    // whitelist of sort keys, so the query string cant mess with anything
-    const sortMap = {
+    // only these sort keys are allowed, so the query string cant inject
+    // anything weird into the sort
+    const sortKeys = {
       createdAt: { createdAt: 1 },
       '-createdAt': { createdAt: -1 },
       dueDate: { dueDate: 1 },
@@ -47,7 +56,7 @@ const taskService = {
       priority: { priority: 1 },
       title: { title: 1 },
     };
-    const sortCriteria = sortMap[sort] || sortMap['-createdAt'];
+    const sortCriteria = sortKeys[sort] || sortKeys['-createdAt'];
 
     const [tasks, total] = await Promise.all([
       Task.find(filter).sort(sortCriteria).skip(skip).limit(limitNum).lean(),
@@ -55,7 +64,7 @@ const taskService = {
     ]);
 
     return {
-      tasks: tasks.map((t) => taskToJson(t)),
+      tasks: tasks.map(toJson),
       total,
       page: pageNum,
       pages: Math.ceil(total / limitNum),
@@ -63,41 +72,26 @@ const taskService = {
     };
   },
 
-  //get a single task by its ID. 
+  // get one task, returns null if it doesnt exist
   async getTaskById(id) {
     const task = await Task.findById(id).lean();
-    if (!task) throw ApiError.notFound('Task not found');
-    return taskToJson(task);
+    return task ? toJson(task) : null;
   },
 
-  //update a task by its ID. Supports both full (PUT) and partial (PATCH) updates.
-  async updateTask(id, data, { full = false } = {}) {
-    const updates = pickTaskFields(data);
-
-    if (full && updates.title === undefined) {
-      throw ApiError.badRequest('Title is required for a full update (PUT)');
-    }
-
-    const task = await Task.findByIdAndUpdate(id, clean(updates), {
+  // update a task, returns null if it doesnt exist
+  async updateTask(id, body) {
+    const updates = pickFields(body);
+    const task = await Task.findByIdAndUpdate(id, updates, {
       new: true,
       runValidators: true,
     });
-
-    if (!task) throw ApiError.notFound('Task not found');
-    return task.toJSON();
+    return task ? toJson(task) : null;
   },
 
-  // deletes a task permanently
+  // delete a task, returns the deleted task or null
   async deleteTask(id) {
-    const task = await Task.findByIdAndDelete(id);
-    if (!task) throw ApiError.notFound('Task not found');
-    return task._id;
+    return Task.findByIdAndDelete(id).lean();
   },
 };
-
-function taskToJson(task) {
-  const { _id, ...rest } = task;
-  return { ...rest, id: String(_id) };
-}
 
 module.exports = taskService;
