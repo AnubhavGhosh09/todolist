@@ -31,7 +31,7 @@ export default function TaskForm({ initialValues = EMPTY_TASK, onSubmit, onCance
       ...form,
       title: form.title.trim(),
       description: form.description.trim(),
-      // Send an empty dueDate as undefined so it doesn't overwrite on partial update.
+      // empty dueDate is sent as undefined so it doesnt erase the old one
       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : undefined,
     });
   };

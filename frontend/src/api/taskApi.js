@@ -7,7 +7,7 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-//normalize the error responses so they are easy to show
+//turn backend errors into readable messages for the user
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -31,16 +31,6 @@ export const taskApi = {
   // GET /tasks, list with filters
   list(params) {
     return api.get('/tasks', { params });
-  },
-
-  // GET /tasks/search?q=, search by keyword
-  search(q) {
-    return api.get('/tasks/search', { params: { q } });
-  },
-
-  // GET a task by id
-  get(id) {
-    return api.get(`/tasks/${id}`);
   },
 
   // POST, create a task

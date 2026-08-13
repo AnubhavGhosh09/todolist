@@ -19,6 +19,8 @@ export default function TaskItem({ task, onToggleStatus, onStatusChange, onEdit,
     setConfirmingDelete(false);
   };
 
+  // first click arms the confirm button, the second click really deletes.
+  // if you do nothing for 5 seconds it goes back to normal
   const handleDelete = () => {
     if (confirmingDelete) {
       clearTimeout(confirmTimer.current);

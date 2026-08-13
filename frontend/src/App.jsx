@@ -47,6 +47,8 @@ export default function App() {
     return () => clearTimeout(debounceRef.current);
   }, [loadTasks]);
 
+  // runs a request and keeps the id of the task being updated,
+  // so its buttons stay disabled until the request finishes
   const runWithBusy = async (id, fn) => {
     setBusyId(id);
     setError('');

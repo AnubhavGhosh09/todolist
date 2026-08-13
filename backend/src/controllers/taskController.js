@@ -132,7 +132,7 @@ const taskController = {
           message: 'Title is required for a full update (PUT)',
         });
       }
-      const task = await taskService.updateTask(req.params.id, req.body, { full: true });
+      const task = await taskService.updateTask(req.params.id, req.body);
       if (!task) return notFound(res);
       res.json({ success: true, message: 'Task updated successfully', data: task });
     } catch (err) {

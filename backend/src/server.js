@@ -12,7 +12,7 @@ async function start() {
       console.log(`Health check: http://localhost:${PORT}/api/v1/health`);
     });
 
-    // close the server cleanly when it stops
+    // close the server and the db when the process stops
     for (const signal of ['SIGINT', 'SIGTERM']) {
       process.on(signal, async () => {
         console.log(`\n${signal} received, shutting down...`);
