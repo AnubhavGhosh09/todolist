@@ -14,13 +14,13 @@ export default function App() {
   const [filters, setFilters] = useState({ status: '', priority: '' });
   const [sort, setSort] = useState('-createdAt');
   const [editingId, setEditingId] = useState(null);
-  const [busyId, setBusyId] = useState(null); // id of the task with an in-flight request
+  const [busyId, setBusyId] = useState(null); // id of the task currently being updated
   const [creating, setCreating] = useState(false);
   const [notice, setNotice] = useState('');
 
   const debounceRef = useRef();
 
-  /** Fetch tasks using the current search + filters (debounced). */
+  // fetch tasks with the current search and filters, debounced
   const loadTasks = useCallback(async (params) => {
     setLoading(true);
     setError('');
@@ -40,7 +40,7 @@ export default function App() {
     }
   }, [query, filters.status, filters.priority, sort]);
 
-  // Debounce API calls so typing in the search box doesn't hammer the server.
+  //debounce so we dont hit the server on every keystroke
   useEffect(() => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => loadTasks(), 350);
@@ -59,7 +59,7 @@ export default function App() {
     }
   };
 
-  /** POST /tasks */
+  // create a task
   const handleCreate = async (data) => {
     setCreating(true);
     setError('');
@@ -74,7 +74,7 @@ export default function App() {
     }
   };
 
-  /** PATCH /tasks/:id — partial update */
+  // edit a task
   const handleEditSubmit = (task) =>
     runWithBusy(task.id, async () => {
       await taskApi.update(task.id, task);
@@ -83,7 +83,7 @@ export default function App() {
       await loadTasks();
     });
 
-  /** PATCH /tasks/:id with { status } — toggle complete / change status */
+  // change the status of a task
   const handleStatusChange = (task, status) =>
     runWithBusy(task.id, async () => {
       await taskApi.update(task.id, { status });
@@ -93,7 +93,7 @@ export default function App() {
   const handleToggleStatus = (task) =>
     handleStatusChange(task, task.status === 'completed' ? 'pending' : 'completed');
 
-  /** DELETE /tasks/:id */
+  // delete a task
   const handleDelete = (task) =>
     runWithBusy(task.id, async () => {
       await taskApi.remove(task.id);
@@ -104,7 +104,7 @@ export default function App() {
   const handleQueryChange = (q) => setQuery(q);
   const handleFilterChange = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }));
 
-  // Auto-dismiss notices after a few seconds.
+  //hide the notice after a few seconds
   useEffect(() => {
     if (!notice) return undefined;
     const t = setTimeout(() => setNotice(''), 3000);

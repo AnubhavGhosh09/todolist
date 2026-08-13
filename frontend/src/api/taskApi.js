@@ -1,18 +1,13 @@
 import axios from 'axios';
 
-/**
- * Single Axios instance for every request to the backend.
- *
- * baseURL resolution:
- *  - VITE_API_URL set (e.g. https://todo-api.onrender.com/api/v1 on Netlify) → that
- *  - otherwise '/api/v1' → proxied by Vite to the backend in development
- */
+// one axios instance for all the requests, the base url comes from VITE_API_URL
+// if its set, otherwise /api/v1 which vite proxies to the backend
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Normalize backend error responses into a readable message.
+//normalize the error responses so they are easy to show
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,32 +28,32 @@ api.interceptors.response.use(
 );
 
 export const taskApi = {
-  /** GET /tasks — list with optional filters { status, priority, q, sort, page, limit } */
+  // GET /tasks, list with filters
   list(params) {
     return api.get('/tasks', { params });
   },
 
-  /** GET /tasks/search?q= — full-text search across title + description */
+  // GET /tasks/search?q=, search by keyword
   search(q) {
     return api.get('/tasks/search', { params: { q } });
   },
 
-  /** GET /tasks/:id */
+  // GET a task by id
   get(id) {
     return api.get(`/tasks/${id}`);
   },
 
-  /** POST /tasks */
+  // POST, create a task
   create(data) {
     return api.post('/tasks', data);
   },
 
-  /** PATCH /tasks/:id — partial update, e.g. { status: 'completed' } */
+  // PATCH update a task, also used for status changes
   update(id, data) {
     return api.patch(`/tasks/${id}`, data);
   },
 
-  /** DELETE /tasks/:id */
+  // DELETE a task
   remove(id) {
     return api.delete(`/tasks/${id}`);
   },

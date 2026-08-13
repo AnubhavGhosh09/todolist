@@ -12,13 +12,7 @@ router
 
 router.get('/search', taskController.searchTasks);
 
-/**
- * /api/v1/tasks/:id
- * - GET=single task
- * - PUT=full update
- * - PATCH=partial update (e.g. { "status": "completed" })
- * - DELETE=remove task
- */
+// routes for /:id, GET a task, PUT full update, PATCH partial update, DELETE
 router
   .route('/:id')
   .all(validateObjectId)

@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { PRIORITIES, EMPTY_TASK } from '../constants';
 
-/**
- * Used both for creating a task (initialValues = EMPTY_TASK)
- * and editing an existing one. In edit mode it renders as a
- * compact inline form row.
- */
+// this form is used for adding a new task and for editing, in edit mode
+// it shows as a small inline row
 export default function TaskForm({ initialValues = EMPTY_TASK, onSubmit, onCancel, submitting }) {
   const isEdit = Boolean(initialValues.id);
   const [form, setForm] = useState(initialValues);

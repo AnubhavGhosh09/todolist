@@ -16,10 +16,7 @@ const clean = (obj) =>
 
 
 const taskService = {
-  /**
-   * Create a new task.
-   * @returns {Promise<import('mongoose').Document>}
-   */
+  //create a new task
   async createTask(data) {
     const task = await Task.create(pickTaskFields(data));
     return task.toJSON();
@@ -41,7 +38,7 @@ const taskService = {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 50));
     const skip = (pageNum - 1) * limitNum;
 
-    // Whitelisted sort keys prevent query-string injection.
+    // whitelist of sort keys, so the query string cant mess with anything
     const sortMap = {
       createdAt: { createdAt: 1 },
       '-createdAt': { createdAt: -1 },
@@ -90,7 +87,7 @@ const taskService = {
     return task.toJSON();
   },
 
-  // Permanently delete a task. Returns the deleted task's id.
+  // deletes a task permanently
   async deleteTask(id) {
     const task = await Task.findByIdAndDelete(id);
     if (!task) throw ApiError.notFound('Task not found');
