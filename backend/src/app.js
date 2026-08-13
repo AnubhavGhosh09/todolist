@@ -13,7 +13,11 @@ app.set('trust proxy', 1);
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim())
+      ? process.env.CORS_ORIGIN.split(',')
+          .map((s) => s.trim())
+          // Browsers never send a trailing slash in the Origin header, so
+          // strip it from configured origins to avoid silent mismatches.
+          .map((s) => s.replace(/\/+$/, ''))
       : true, // reflect any origin when not configured (dev convenience)
     credentials: true,
   })
