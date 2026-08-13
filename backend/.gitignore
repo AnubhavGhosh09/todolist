@@ -3,3 +3,6 @@ node_modules/
 .env.local
 *.log
 .DS_Store
+
+# my private notes for the review meeting
+ARCHITECTURE.md
