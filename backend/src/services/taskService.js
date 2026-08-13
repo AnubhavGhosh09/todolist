@@ -1,24 +1,20 @@
 const Task = require('../models/Task');
 const ApiError = require('../utils/ApiError');
 
-/** Whitelist of fields that can be created/updated via the API. */
 const TASK_FIELDS = ['title', 'description', 'status', 'priority', 'dueDate'];
 
-/** Pick only allowed fields from a raw request body. */
+
 const pickTaskFields = (body) =>
   TASK_FIELDS.reduce((acc, field) => {
     if (body[field] !== undefined) acc[field] = body[field];
     return acc;
   }, {});
 
-/** Strip empty/undefined values so they never clobber existing data. */
+//cut undefines values
 const clean = (obj) =>
   Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined && v !== ''));
 
-/**
- * Service layer — all database access and business rules live here.
- * Controllers stay thin: they only translate HTTP concerns.
- */
+
 const taskService = {
   /**
    * Create a new task.
@@ -29,17 +25,14 @@ const taskService = {
     return task.toJSON();
   },
 
-  /**
-   * List tasks with optional filtering, search, sorting, and pagination.
-   * Query params: status, priority, q (full-text search), sort, page, limit.
-   */
+  //List tasks with optional filters, sorting, and pagination.
   async listTasks({ status, priority, q, sort, page = 1, limit = 50 } = {}) {
     const filter = {};
 
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
 
-    // Full-text search across title + description (MongoDB text index).
+    // Full-text search across title and description 
     if (q && q.trim()) {
       filter.$text = { $search: q.trim() };
     }
@@ -73,17 +66,14 @@ const taskService = {
     };
   },
 
-  /** Get a single task by id. */
+  //get a single task by its ID. 
   async getTaskById(id) {
     const task = await Task.findById(id).lean();
     if (!task) throw ApiError.notFound('Task not found');
     return taskToJson(task);
   },
 
-  /**
-   * Update a task. Supports both partial (PATCH) and full (PUT) updates —
-   * PUT requires a title, PATCH updates only the fields provided.
-   */
+  //update a task by its ID. Supports both full (PUT) and partial (PATCH) updates.
   async updateTask(id, data, { full = false } = {}) {
     const updates = pickTaskFields(data);
 
@@ -100,7 +90,7 @@ const taskService = {
     return task.toJSON();
   },
 
-  /** Permanently delete a task. Returns the deleted task's id. */
+  // Permanently delete a task. Returns the deleted task's id.
   async deleteTask(id) {
     const task = await Task.findByIdAndDelete(id);
     if (!task) throw ApiError.notFound('Task not found');
@@ -108,7 +98,6 @@ const taskService = {
   },
 };
 
-/** Convert a lean/plain task document to the API shape (id instead of _id). */
 function taskToJson(task) {
   const { _id, ...rest } = task;
   return { ...rest, id: String(_id) };

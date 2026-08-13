@@ -1,19 +1,26 @@
-# 📦 To-Do List API (Node.js + Express + MongoDB)
+# To-Do List API
 
-RESTful backend for the To-Do List app, built with a **Route → Controller → Service → Model** structure.
+This is the backend of the To-Do List app. It is built with Node.js, Express and MongoDB. The code follows a Route to Controller to Service to Model structure.
 
 ## Quick start
 
 ```bash
 npm install
-cp .env.example .env   # set MONGODB_URI (Atlas or local)
-npm run dev            # http://localhost:5000
+cp .env.example .env
+npm run dev
 ```
 
-No MongoDB installed? Use the in-memory option:
+Make sure to set MONGODB_URI in the .env file, it can be Atlas or local. The server runs on http://localhost:5000.
+
+If you don't have MongoDB installed, you can run this script instead:
 
 ```bash
-node scripts/dev-mongo.js            # keep this running, note the printed URI
+node scripts/dev-mongo.js
+```
+
+Keep it running and note the printed URI, then start the server with it:
+
+```bash
 MONGODB_URI=<printed-uri> npm run dev
 ```
 
@@ -23,28 +30,8 @@ MONGODB_URI=<printed-uri> npm run dev
 npm test
 ```
 
-Runs 17 integration tests against an in-memory MongoDB (requires a one-time binary download on first run).
-
-## Folder layout
-
-```
-src/
-├── config/     # DB connection
-├── models/     # Mongoose schema + validation
-├── services/   # Business logic and DB access (no HTTP concerns)
-├── controllers # Parse requests, call services, shape responses
-├── routes/     # URL → controller mapping
-├── middlewares # validate (body/ObjectId), notFound, errorHandler
-└── utils/      # ApiError, asyncHandler
-```
+This runs 17 integration tests.
 
 ## Environment variables
 
-| Variable      | Required | Description                                     |
-| ------------- | -------- | ----------------------------------------------- |
-| `MONGODB_URI` | ✅       | MongoDB connection string                       |
-| `PORT`        | ❌       | Listen port (default 5000)                      |
-| `CORS_ORIGIN` | ❌       | Allowed origins, comma-separated (empty = all)  |
-| `NODE_ENV`    | ❌       | `production` hides error stacks                 |
-
-See [../README.md](../README.md) for the full API reference and deployment guide.
+MONGODB_URI is required, it is the MongoDB connection string. PORT is optional, it is the listen port and defaults to 5000. CORS_ORIGIN is optional, it is the allowed origins separated by commas, empty means all. NODE_ENV is optional, production hides the error stacks.

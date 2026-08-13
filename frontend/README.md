@@ -1,53 +1,30 @@
-# 🎨 To-Do List Frontend (React + Vite + Axios)
+# To-Do List Frontend
 
-React frontend integrated with the To-Do List API. State is managed with React hooks (`useState` / `useEffect`) in `App.jsx`; all HTTP calls live in the Axios client (`src/api/taskApi.js`).
+This is the frontend of the To-Do List app. It is built with React, Vite and Axios. The state is managed with React hooks, useState and useEffect, in App.jsx. All the HTTP calls live in the Axios client, src/api/taskApi.js.
 
 ## Quick start
 
 ```bash
 npm install
-npm run dev            # http://localhost:5173
+npm run dev
 ```
 
-The Vite dev server proxies `/api` → `http://localhost:5000` (see `vite.config.js`), so no CORS configuration is needed locally — just have the backend running.
+The app runs on http://localhost:5173. The Vite dev server proxies /api to http://localhost:5000, check vite.config.js. Because of that we don't need CORS configuration locally, just have the backend running.
 
 ## Production build
 
 ```bash
-npm run build          # outputs to dist/
+npm run build
 ```
 
-For production, tell the app where the API lives:
-
-```
-# .env (see .env.example)
-VITE_API_URL=https://your-backend.onrender.com/api/v1
-```
+This outputs to the dist folder. For production, tell the app where the API lives. Put VITE_API_URL in a .env file, see .env.example.
 
 ## Features
 
-- **CRUD** — create, read, update, and delete tasks
-- **Status updates** — checkbox to complete/un-complete, or a dropdown for `pending` / `in-progress` / `completed`
-- **Search** — debounced full-text search across title and description
-- **Filters & sorting** — by status, priority, and sort order
-- **UX states** — loading spinner, error banners, success toasts, empty state
-- **Responsive** — works on mobile and desktop
+The app can create, read, update and delete tasks. There is a checkbox to complete or un-complete a task, and a dropdown for pending, in-progress and completed. The search is a debounced full-text search on title and description. You can filter and sort by status, priority and sort order. The UI has loading spinners, error banners, success toasts and an empty state. It is responsive, it works on mobile and desktop.
 
 ## Components
 
-```
-src/
-├── api/taskApi.js       # Axios instance + all API functions + error normalization
-├── components/
-│   ├── Toolbar.jsx      # search box + filters + sort
-│   ├── TaskForm.jsx     # add/edit form with validation
-│   ├── TaskList.jsx     # list container (empty state, inline editing)
-│   ├── TaskItem.jsx     # single task row (status, edit, two-step delete)
-│   ├── Loader.jsx       # spinner
-│   └── Alert.jsx        # error / success banners
-├── App.jsx              # state management + data fetching orchestration
-├── constants.js         # status/priority enums shared by the UI
-└── index.css
-```
+The api folder has taskApi.js, it has the Axios instance and all the API functions. In the components folder there is Toolbar.jsx for the search box, filters and sort, TaskForm.jsx for the add and edit form with validation, TaskList.jsx for the list container, TaskItem.jsx for a single task row, Loader.jsx for the spinner, and Alert.jsx for the error and success banners. App.jsx handles the state and the data fetching, constants.js has the status and priority enums, and index.css has the styles.
 
-See [../README.md](../README.md) for deployment instructions (Netlify) and the assignment write-up.
+See the main README for the deployment instructions and the assignment write-up.

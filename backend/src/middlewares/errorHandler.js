@@ -1,28 +1,23 @@
 const mongoose = require('mongoose');
 const ApiError = require('../utils/ApiError');
 
-/** Format a Mongoose validation error into readable messages. */
 function formatMongooseErrors(error) {
   return Object.values(error.errors || {}).map((e) => e.message);
 }
 
-/**
- * Centralized error handler — the last middleware in the stack.
- * Converts every thrown error into a consistent JSON response.
- */
-// eslint-disable-next-line no-unused-vars
+//for handling any kind of error that occurs in the application and sending a proper response to the client.
 function errorHandler(err, _req, res, _next) {
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal server error';
   let details = err.details;
 
-  // Mongoose cast errors: an id that isn't a valid ObjectId.
+  // for error where an id that isn't a valid ObjectId.
   if (err instanceof mongoose.Error.CastError) {
     statusCode = 400;
     message = 'Invalid id format';
   }
 
-  // Mongoose validation errors (e.g. missing title, bad enum).
+  // error for missing title.
   if (err instanceof mongoose.Error.ValidationError) {
     statusCode = 400;
     message = 'Validation failed';

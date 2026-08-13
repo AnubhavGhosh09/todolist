@@ -1,10 +1,4 @@
-/**
- * Development helper: starts an in-memory MongoDB (no installation needed)
- * and keeps it running so the API can be developed without Atlas.
- *
- * Usage:  node scripts/dev-mongo.js
- * Then:   MONGODB_URI=mongodb://127.0.0.1:27018/todo_app npm run dev
- */
+//used before actual atlas connection is established, to avoid connection errors
 process.env.MONGOMS_VERSION = '8.0.4';
 process.env.MONGOMS_DISTRO = 'debian-12';
 

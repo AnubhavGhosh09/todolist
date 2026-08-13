@@ -1,12 +1,9 @@
 const taskService = require('../services/taskService');
 const asyncHandler = require('../utils/asyncHandler');
 
-/**
- * Controllers are thin HTTP adapters: parse the request, call the
- * service, and shape the response. All business logic lives in the service.
- */
+// Handlers for task-related endpoints
 const taskController = {
-  /** POST /api/v1/tasks */
+  //POST
   createTask: asyncHandler(async (req, res) => {
     const task = await taskService.createTask(req.body);
     res.status(201).json({
@@ -16,7 +13,7 @@ const taskController = {
     });
   }),
 
-  /** GET /api/v1/tasks */
+  //GET
   listTasks: asyncHandler(async (req, res) => {
     const result = await taskService.listTasks(req.query);
     res.status(200).json({
@@ -29,7 +26,8 @@ const taskController = {
     });
   }),
 
-  /** GET /api/v1/tasks/search?q=keyword */
+  //GET /api/v1/tasks/search?q=keyword
+
   searchTasks: asyncHandler(async (req, res) => {
     const { q } = req.query;
     if (!q || !q.trim()) {
@@ -49,13 +47,13 @@ const taskController = {
     });
   }),
 
-  /** GET /api/v1/tasks/:id */
+  //GET via id
   getTaskById: asyncHandler(async (req, res) => {
     const task = await taskService.getTaskById(req.params.id);
     res.status(200).json({ success: true, data: task });
   }),
 
-  /** PUT /api/v1/tasks/:id — full update */
+  //PUT
   updateTaskFull: asyncHandler(async (req, res) => {
     const task = await taskService.updateTask(req.params.id, req.body, { full: true });
     res.status(200).json({
@@ -65,7 +63,7 @@ const taskController = {
     });
   }),
 
-  /** PATCH /api/v1/tasks/:id — partial update (incl. status changes) */
+  //PATCH
   updateTaskPartial: asyncHandler(async (req, res) => {
     const task = await taskService.updateTask(req.params.id, req.body);
     res.status(200).json({
@@ -75,7 +73,7 @@ const taskController = {
     });
   }),
 
-  /** DELETE /api/v1/tasks/:id */
+  //DELETE
   deleteTask: asyncHandler(async (req, res) => {
     const id = await taskService.deleteTask(req.params.id);
     res.status(200).json({

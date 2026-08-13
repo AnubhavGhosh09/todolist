@@ -3,7 +3,7 @@ const ApiError = require('../utils/ApiError');
 const STATUSES = ['pending', 'in-progress', 'completed'];
 const PRIORITIES = ['Low', 'Medium', 'High'];
 
-/** Validate a MongoDB ObjectId-looking path param. */
+//validating the object id of the task
 const validateObjectId = (req, _res, next) => {
   const { id } = req.params;
   if (!/^[a-f\d]{24}$/i.test(id)) {
@@ -12,10 +12,7 @@ const validateObjectId = (req, _res, next) => {
   return next();
 };
 
-/**
- * Validate the body of a task create/update request.
- * Only the whitelisted fields are inspected; unknown fields are ignored.
- */
+//validating body of the task
 const validateTaskBody = (req, _res, next) => {
   const errors = [];
   const { title, status, priority, dueDate } = req.body || {};

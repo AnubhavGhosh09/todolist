@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
-/**
- * Task schema — the single source of truth for task data.
- * Statuses and priorities are constrained to fixed enums so the
- * database can never store an invalid value.
- */
+//Task schema having alll necessary fields for accepting input
 const taskSchema = new mongoose.Schema(
   {
     title: {
@@ -61,7 +57,7 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
-// Text index powers the `q` search on GET /tasks and GET /tasks/search.
+
 taskSchema.index({ title: 'text', description: 'text' });
 
 module.exports = mongoose.model('Task', taskSchema);

@@ -5,8 +5,7 @@ const mongoose = require('mongoose');
 const app = require('../src/app');
 const Task = require('../src/models/Task');
 
-// This machine's distro detection is unreliable (Parrot is Debian-based but
-// reports VERSION_ID=7.3), so pin the exact MongoDB build explicitly.
+// my Linux OS was showing a warning about the MongoDB version being used, so I set these env vars to avoid that warning
 process.env.MONGOMS_VERSION = '8.0.4';
 process.env.MONGOMS_DISTRO = 'debian-12';
 

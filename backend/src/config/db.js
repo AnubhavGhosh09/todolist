@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 
-/**
- * Connect to MongoDB (Atlas or local).
- * Reads MONGODB_URI from the environment.
- */
+//Connection to mongodb
 async function connectDB(uri = process.env.MONGODB_URI) {
   if (!uri) {
     throw new Error(
@@ -11,9 +8,9 @@ async function connectDB(uri = process.env.MONGODB_URI) {
     );
   }
 
-  mongoose.connection.on('connected', () => console.log('MongoDB connected'));
-  mongoose.connection.on('error', (err) => console.error('MongoDB error:', err.message));
-  mongoose.connection.on('disconnected', () => console.log('MongoDB disconnected'));
+  mongoose.connection.on('connected', () => console.log('Mongo connected'));
+  mongoose.connection.on('error', (err) => console.error('Mongo error:', err.message));
+  mongoose.connection.on('disconnected', () => console.log('Mongo disconnected'));
 
   await mongoose.connect(uri, {
     serverSelectionTimeoutMS: 10000,

@@ -6,19 +6,19 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
-// Trust proxy so Render/Netlify-style deployments report correct IPs.
+
 app.set('trust proxy', 1);
 
-// CORS: allow the React frontend (Vite dev server or Netlify) to call the API.
+// CORS: allow the React frontend to call the API.
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',')
           .map((s) => s.trim())
-          // Browsers never send a trailing slash in the Origin header, so
-          // strip it from configured origins to avoid silent mismatches.
+          // Browsers never send a trailing slash in the Origin header. so strip if present.
+      
           .map((s) => s.replace(/\/+$/, ''))
-      : true, // reflect any origin when not configured (dev convenience)
+      : true, 
     credentials: true,
   })
 );

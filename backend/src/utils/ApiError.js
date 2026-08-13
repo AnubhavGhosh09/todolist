@@ -1,8 +1,4 @@
-/**
- * Operational error with an HTTP status code.
- * Thrown by services/controllers and translated to a JSON
- * response by the centralized error handler.
- */
+
 class ApiError extends Error {
   constructor(statusCode, message, details = undefined) {
     super(message);
